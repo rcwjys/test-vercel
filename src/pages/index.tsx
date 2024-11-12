@@ -52,7 +52,7 @@ type Career = {
 //     </div>
 //   );
 // }
-
+// @typescript-eslint/no-unused-vars
 export default function Career() {
   const [careers, setCareers] = useState<Career[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,10 @@ export default function Career() {
 
         setCareers(data.career);
       } catch (err) {
-        setError("No job postings available at the moment.");
+        if (err) {
+          setError("No job postings available at the moment");
+        }
+        setError("a");
       }
     }
 
