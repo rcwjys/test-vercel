@@ -1,5 +1,4 @@
-// // pages/index.tsx
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 
 type Career = {
   id_posting: string;
@@ -9,81 +8,39 @@ type Career = {
   requirement: string;
 };
 
-// export default function Home() {
-//   const [careers, setCareers] = useState<Career[]>([]);
-//   const [error, setError] = useState<string | null>(null);
+type CareerPageProps = {
+  careers: Career[];
+  error: string | null;
+};
 
-//   useEffect(() => {
-//     async function fetchData() {
-//       try {
-//         const res = await fetch(
-//           "https://amdgmmp.mmproperty.com/api/career.php?lang=id"
-//         );
+export const getServerSideProps = async () => {
+  const res = await fetch(
+    "https://amdgmmp.mmproperty.com/api/career.php?lang=id"
+  );
 
-//         const data = await res.json();
+  if (!res.ok) {
+    return { props: [], error: "failed to fetch data" };
+  }
 
-//         setCareers(data.career);
-//       } catch (err) {
-//         setError("failed to fetch");
-//       }
-//     }
+  const data = await res.json();
 
-//     fetchData();
-//   }, []);
+  if (!data || !Array.isArray(data.career)) {
+    return {
+      props: { careers: [], error: "No job postings available at the moment" },
+    };
+  }
 
-//   return (
-//     <div>
-//       <h1>Career Listings ({careers.length})</h1>
-//       {error && <p>{error}</p>}
-//       {careers.length > 0 ? (
-//         careers.map((career, index) => (
-//           <ul key={index} style={{ marginTop: "25px" }}>
-//             <li>{career.id_posting}</li>
-//             <li>{career.name}</li>
-//             <li>{career.namaDepartement}</li>
-//             <li>{career.position}</li>
-//             <li dangerouslySetInnerHTML={{ __html: career.requirement }} />
-//             <p>==============================</p>
-//           </ul>
-//         ))
-//       ) : (
-//         <p>No careers available</p>
-//       )}
-//     </div>
-//   );
-// }
-// @typescript-eslint/no-unused-vars
-export default function Career() {
-  const [careers, setCareers] = useState<Career[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch(
-          "https://amdgmmp.mmproperty.com/api/career.php?lang=id"
-        );
+  return { props: { careers: data.career, error: null } };
+};
 
-        const data = await res.json();
-
-        setCareers(data.career);
-      } catch (err) {
-        if (err) {
-          setError("No job postings available at the moment");
-        }
-        setError("a");
-      }
-    }
-
-    fetchData();
-  }, []);
-
+export default function CareerPage({ careers, error }: CareerPageProps) {
   return (
     <>
-      {/* <P className="mt-10">{t("Company.career.description")}</P>   */}
+      {/* <P className="mt-10">{t("Company.career.description")}</P> */}
       <div className="m-0 flex list-none flex-wrap justify-between p-0 font-sans">
         <ol className="flex flex-wrap p-0">
           {careers.length > 0 ? (
-            careers.map((job: Career, index: number) => (
+            careers.map((job, index) => (
               <Fragment key={index}>
                 <li
                   key={job.id_posting}
